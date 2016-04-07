@@ -2,30 +2,47 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-==============
-CMIS Connector
-==============
+===============================
+Add Documents from Odoo/OpenERP
+===============================
 
-This module is the base for Odoo modules implementing different integration
-scenario with a CMIS server.
-It allows you to configure a CMIS backend in Odoo.
+This module allows you to store Odoo/OpenERP document in the DMS repository.
 
 Installation
 ============
 
-To be compliant with the latest version of CMIS (1.1), the connector use
-the latest version of the python cmislib library not yet released at this
-stage. The lib can be installed with:
-
-pip install svn+https://svn.apache.org/repos/asf/chemistry/cmislib/trunk#egg=cmislib 
+No installation required:
 
 Configuration
 =============
 
-Create a new CMIS backend with the host, login and password.
+* Create a new CMIS backend with the host, login and password.
+* Configure the path in the repository where documents will be dropped.
+  By default, it uses the home directory of the user.
 
 Usage
 =====
+
+* On one Odoo/OpenERP record, click "Add document".
+* Upload your documents
+* Uploaded documents will be enqueued for storage in the DMS
+  (Document Management System)
+
+Add Metadata
+------------
+
+To manage a custom aspect using CMIS (and all the other supported ways)
+you have to:
+
+* Define a new custom model configuring Alfresco. To do this I suggest you
+http://wiki.alfresco.com/wiki/Step-By-Step:_Creating_A_Custom_Model.
+
+* Add the custom aspect to the document you upload or create in Alfresco.
+Using CMIS I suggest you:
+http://docs.alfresco.com/4.1/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Fconcepts%2Fopencmis-ext-adding.html.
+
+* Set the custom property in the way you probably know using CMIS.
+
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
@@ -38,9 +55,7 @@ Bugs are tracked on `GitHub Issues
 <https://github.com/OCA/connector-cmis/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed `feedback
-<https://github.com/OCA/
-connector-cmis/issues/new?body=module:%20
-cmis%0Aversion:%20
+<https://github.com/OCA/connector-cmis/issues/new?body=module:%20cmis_write%0Aversion:%20
 9.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Credits
