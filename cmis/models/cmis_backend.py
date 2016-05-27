@@ -2,6 +2,7 @@
 # © 2014-2015 Savoir-faire Linux (<http://www.savoirfairelinux.com>).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 import cmislib.exceptions
+from cmislib.exceptions import ObjectNotFoundException
 
 from openerp import api, fields, models
 from openerp.exceptions import Warning
@@ -61,15 +62,15 @@ class CmisBackend(models.Model):
             # login with the cmis account
             repo = this.check_auth()
             folder_path_write = this.initial_directory_write
-            # Testing the path
-            rs = repo.query("SELECT cmis:path FROM  cmis:folder")
-            bool_path_write = self.check_existing_path(rs, folder_path_write)
+            path_write_objectid = self.get_folder_by_path(
+                folder_path_write,
+                create_if_not_found=False,
+                cmis_parent_objectid=None)
             # Check if we can create a doc from OE to EDM
             # Document properties
-            if bool_path_write:
-                sub = repo.getObjectByPath(folder_path_write)
+            if path_write_objectid:
                 try:
-                    sub.createDocumentFromString(
+                    path_write_objectid.createDocumentFromString(
                         datas_fname,
                         contentString='hello, world',
                         contentType='text/plain')
@@ -80,7 +81,8 @@ class CmisBackend(models.Model):
                 except cmislib.exceptions.RuntimeException:
                     raise CMISError(
                         ("Please check your access right."))
-            self.get_error_for_path(bool_path_write, folder_path_write)
+            self.get_error_for_path(path_write_objectid != False,
+                                    folder_path_write)
 
     @api.multi
     def check_directory_of_read(self):
@@ -88,19 +90,37 @@ class CmisBackend(models.Model):
         for this in self:
             repo = this.check_auth()
             folder_path_read = this.initial_directory_read
-            # Testing the path
-            rs = repo.query("SELECT cmis:path FROM  cmis:folder ")
-            bool_path_read = self.check_existing_path(rs, folder_path_read)
-            self.get_error_for_path(bool_path_read, folder_path_read)
+            path_read_objectid = self.get_folder_by_path(
+                folder_path_read,
+                create_if_not_found=False,
+                cmis_parent_objectid=None)
+            self.get_error_for_path(path_read_objectid != False,
+                                    folder_path_read)
 
-    def check_existing_path(self, rs, folder_path):
-        """Function to check if the path is correct"""
-        for one_rs in rs:
-            # Print name of files
-            cmis_path = one_rs.getProperties()['cmis:path']
-            if folder_path == cmis_path or folder_path in cmis_path:
-                return True
-        return False
+    @api.multi
+    def get_folder_by_path(self, path, create_if_not_found=True,
+                           cmis_parent_objectid=None):
+        self.ensure_one()
+        repo = self.check_auth()
+        if cmis_parent_objectid:
+            path = repo.getObject(
+                cmis_parent_objectid).getPaths()[0] + '/' + path
+        traversed = []
+        try:
+            return repo.getObjectByPath(path)
+        except ObjectNotFoundException:
+            if not create_if_not_found:
+                return False
+        # The path doesn't exist and must be created
+        for part in path.split('/'):
+            try:
+                part = '%s' % part
+                traversed.append(part)
+                new_root = repo.getObjectByPath('/'.join(traversed))
+            except ObjectNotFoundException:
+                new_root = repo.createFolder(new_root, part)
+            root = new_root
+        return root
 
     def get_error_for_path(self, is_valid, path):
         """Return following the boolean the right error message"""
