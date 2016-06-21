@@ -87,11 +87,6 @@ msgid "Error path for : %s"
 msgstr "Error path for : %s"
 
 #. module: cmis
-#: field:cmis.backend,storing_ok:0
-msgid "Allow storing in this backend"
-msgstr "Allow storing in this backend"
-
-#. module: cmis
 #: code:addons/cmis/cmis_backend.py:168
 #, python-format
 msgid "Path is correct for : %s"
@@ -101,11 +96,6 @@ msgstr "Path is correct for : %s"
 #: view:cmis.backend:0
 msgid "Cmis Configuration"
 msgstr "Cmis Configuration"
-
-#. module: cmis
-#: field:cmis.backend,initial_directory_read:0
-msgid "Initial directory for reading"
-msgstr "Initial directory for reading"
 
 #. module: cmis
 #: field:cmis.binding,updated_on:0
@@ -150,11 +140,6 @@ msgstr "Version"
 #: field:cmis.backend,initial_directory_write:0
 msgid "Initial directory for writing"
 msgstr "Initial directory for writing"
-
-#. module: cmis
-#: field:cmis.backend,browsing_ok:0
-msgid "Allow browsing this backend"
-msgstr "Allow browsing this backend"
 
 #. module: cmis
 #: field:cmis.binding,dms_id:0
